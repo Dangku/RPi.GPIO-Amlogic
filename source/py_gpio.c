@@ -27,6 +27,7 @@ SOFTWARE.
 #include "cpuinfo.h"
 #include "constants.h"
 #include "common.h"
+#include "aml.h"
 
 static PyObject *rpi_revision; // deprecated
 static PyObject *board_info;
@@ -129,7 +130,7 @@ static PyObject *py_cleanup(PyObject *self, PyObject *args, PyObject *kwargs)
          event_cleanup_all();
 
          // set everything back to input
-         for (i=0; i<54; i++) {
+         for (i=0; i<=MAXGPIOCOUNT; i++) {
             if (gpio_direction[i] != -1) {
                setup_gpio(i, INPUT, PUD_OFF);
                gpio_direction[i] = -1;
@@ -569,8 +570,17 @@ static unsigned int chan_from_gpio(unsigned int gpio)
    int chan;
    int chans;
 
-   if (gpio_mode == BCM)
-      return gpio;
+   if (gpio_mode == BCM) {
+      if (strstr(rpiinfo.processor, "AML")) {
+        for (chan=1; chan<41; chan++)
+            if (*(*bcm_to_amlgpio+chan) == gpio)
+                return chan;
+        return -1;
+      }
+      else
+        return gpio;
+   }
+
    if (rpiinfo.p1_revision == 0)   // not applicable for compute module
       return -1;
    else if (rpiinfo.p1_revision == 1 || rpiinfo.p1_revision == 2)
@@ -999,7 +1009,7 @@ PyMODINIT_FUNC init_GPIO(void)
 
    define_constants(module);
 
-   for (i=0; i<54; i++)
+   for (i=0; i<=MAXGPIOCOUNT; i++)
       gpio_direction[i] = -1;
 
    // detect board revision and set up accordingly
@@ -1022,13 +1032,19 @@ PyMODINIT_FUNC init_GPIO(void)
                               "RAM",rpiinfo.ram);
    PyModule_AddObject(module, "RPI_INFO", board_info);
 
-   if (rpiinfo.p1_revision == 1) {
-      pin_to_gpio = &pin_to_gpio_rev1;
-   } else if (rpiinfo.p1_revision == 2) {
-      pin_to_gpio = &pin_to_gpio_rev2;
-   } else { // assume model B+ or A+ or 2B
-      pin_to_gpio = &pin_to_gpio_rev3;
-   }
+    if (strstr(rpiinfo.processor, "AML")) {
+        setMappingPtrsAml();
+    }
+    else {
+        bcm_to_amlgpio = &bcmToOGpioRPi;  //1:1 mapping
+        if (rpiinfo.p1_revision == 1) {
+            pin_to_gpio = &pin_to_gpio_rev1;
+        } else if (rpiinfo.p1_revision == 2) {
+            pin_to_gpio = &pin_to_gpio_rev2;
+        } else { // assume model B+ or A+ or 2B
+            pin_to_gpio = &pin_to_gpio_rev3;
+        }
+    }
 
    rpi_revision = Py_BuildValue("i", rpiinfo.p1_revision);     // deprecated
    PyModule_AddObject(module, "RPI_REVISION", rpi_revision);   // deprecated

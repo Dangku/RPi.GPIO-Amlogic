@@ -30,6 +30,8 @@ SOFTWARE.
 #include <string.h>
 #include <sys/time.h>
 #include "event_gpio.h"
+#include "common.h"
+#include "aml.h"
 
 const char *stredge[4] = {"none", "rising", "falling", "both"};
 
@@ -57,7 +59,7 @@ struct callback
 };
 struct callback *callbacks = NULL;
 
-int event_occurred[54] = { 0 };
+int event_occurred[MAXGPIOCOUNT+1] = { 0 };
 int thread_running = 0;
 int epfd_thread = -1;
 int epfd_blocking = -1;
@@ -75,8 +77,8 @@ int epfd_blocking = -1;
 int gpio_export(unsigned int gpio)
 {
     int fd, len;
-    char str_gpio[3];
-    char filename[33];
+    char str_gpio[8];
+    char filename[64];
 
     snprintf(filename, sizeof(filename), "/sys/class/gpio/gpio%d", gpio);
 
@@ -99,7 +101,7 @@ int gpio_export(unsigned int gpio)
 int gpio_unexport(unsigned int gpio)
 {
     int fd, len;
-    char str_gpio[3];
+    char str_gpio[8];
 
     if ((fd = open("/sys/class/gpio/unexport", O_WRONLY)) < 0)
         return -1;
@@ -116,7 +118,7 @@ int gpio_set_direction(unsigned int gpio, unsigned int in_flag)
     int retry;
     struct timespec delay;
     int fd;
-    char filename[33];
+    char filename[64];
 
     snprintf(filename, sizeof(filename), "/sys/class/gpio/gpio%d/direction", gpio);
 
@@ -143,7 +145,7 @@ int gpio_set_direction(unsigned int gpio, unsigned int in_flag)
 int gpio_set_edge(unsigned int gpio, unsigned int edge)
 {
     int fd;
-    char filename[28];
+    char filename[64];
 
     snprintf(filename, sizeof(filename), "/sys/class/gpio/gpio%d/edge", gpio);
 
@@ -158,7 +160,7 @@ int gpio_set_edge(unsigned int gpio, unsigned int edge)
 int open_value_file(unsigned int gpio)
 {
     int fd;
-    char filename[29];
+    char filename[64];
 
     // create file descriptor of value file
     snprintf(filename, sizeof(filename), "/sys/class/gpio/gpio%d/value", gpio);

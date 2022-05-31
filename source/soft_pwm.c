@@ -93,7 +93,10 @@ void *pwm_thread(void *threadarg)
 
     while (p->running)
     {
-
+        //original aml c port was storing gpio as pi bcm
+        //number and using *(bcm_to_amlgpio + p->gpio to
+        //access.  We're storing as native GPIO number so
+        //no aml patch required
         if (p->dutycycle > 0.0)
         {
             output_gpio(p->gpio, 1);

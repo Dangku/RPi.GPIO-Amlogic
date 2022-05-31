@@ -69,6 +69,7 @@ static int PWM_init(PWMObject *self, PyObject *args, PyObject *kwds)
 
     self->freq = frequency;
 
+    //!!!Original aml port passed rpi BCM number. Now passing native GPIO number to pwm_set_frequency
     pwm_set_frequency(self->gpio, self->freq);
     return 0;
 }

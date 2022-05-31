@@ -30,6 +30,7 @@ SOFTWARE.
 #include <string.h>
 #include <arpa/inet.h>
 #include "cpuinfo.h"
+#include "aml.h"
 
 int get_rpi_info(rpi_info *info)
 {
@@ -59,13 +60,27 @@ int get_rpi_info(rpi_info *info)
              strcmp(hardware, "BCM2836") == 0 ||
              strcmp(hardware, "BCM2837") == 0 ) {
             found = 1;
-         }
-         sscanf(buffer, "Revision	: %s", revision);
+            aml_found=0;
+        }
+        else {  //Check for Bananapi 
+         if (strstr(hardware, "Bananapi"))
+            sscanf(buffer, "Hardware	: Bananapi %s", hardware);
+         if (strstr(hardware, "BPI-M2S") || strstr(hardware, "BPI-M5")) {
+                aml_found = found = 1;
+                setInfoAml(hardware, (void *)info);
+            }
+        }
+        sscanf(buffer, "Revision	: %s", revision);
       }
    }
    else
       return -1;
    fclose(fp);
+
+   if (aml_found) {
+      strcpy(info->revision, revision);
+      return 0;
+   }
 
    if (!found)
       return -1;

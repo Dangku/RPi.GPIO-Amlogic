@@ -4,6 +4,7 @@ LICENCE.txt
 MANIFEST.in
 README.txt
 create_gpio_user_permissions.py
+setup.cfg
 setup.py
 RPi/__init__.py
 RPi.GPIO.egg-info/PKG-INFO
@@ -11,6 +12,8 @@ RPi.GPIO.egg-info/SOURCES.txt
 RPi.GPIO.egg-info/dependency_links.txt
 RPi.GPIO.egg-info/top_level.txt
 RPi/GPIO/__init__.py
+source/aml.c
+source/aml.h
 source/c_gpio.c
 source/c_gpio.h
 source/common.c
@@ -27,4 +30,6 @@ source/py_pwm.h
 source/soft_pwm.c
 source/soft_pwm.h
 test/issue_94_111_154.py
+test/led.py
+test/simplerw.py
 test/test.py

@@ -23,14 +23,12 @@ SOFTWARE.
 #include "Python.h"
 #include "c_gpio.h"
 #include "common.h"
+#include "aml.h"
 
 int gpio_mode = MODE_UNKNOWN;
 const int pin_to_gpio_rev1[41] = {-1, -1, -1, 0, -1, 1, -1, 4, 14, -1, 15, 17, 18, 21, -1, 22, 23, -1, 24, 10, -1, 9, 25, 11, 8, -1, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 const int pin_to_gpio_rev2[41] = {-1, -1, -1, 2, -1, 3, -1, 4, 14, -1, 15, 17, 18, 27, -1, 22, 23, -1, 24, 10, -1, 9, 25, 11, 8, -1, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 const int pin_to_gpio_rev3[41] = {-1, -1, -1, 2, -1, 3, -1, 4, 14, -1, 15, 17, 18, 27, -1, 22, 23, -1, 24, 10, -1, 9, 25, 11, 8, -1, 7, -1, -1, 5, -1, 6, 12, 13, -1, 19, 16, 26, 20, -1, 21 };
-const int (*pin_to_gpio)[41];
-int gpio_direction[54];
-rpi_info rpiinfo;
 int setup_error = 0;
 int module_setup = 0;
 
@@ -51,6 +49,12 @@ int check_gpio_priv(void)
     }
     return 0;
 }
+
+//In original aml port, bcm_gpio gets bcm rpi specific
+//value and gpio gets aml gpio value
+//bcm_gpio was used only as index to gpio_direction array
+//I have expanded gpio direction to allow for indexing using
+//native gpio numbers and used native gpio as index exerywhere
 
 int get_gpio_number(int channel, unsigned int *gpio)
 {
@@ -83,7 +87,7 @@ int get_gpio_number(int channel, unsigned int *gpio)
     }
     else // gpio_mode == BCM
     {
-        *gpio = channel;
+        *gpio = *(*bcm_to_amlgpio+channel);
     }
 
     return 0;
