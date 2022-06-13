@@ -609,7 +609,7 @@ void setInfoAml(char *hardware, void *vinfo)
         info->manufacturer = "Bananapi";
         info->processor = "AMLS922X/AMLA311D";
     }
-    else if (strcmp(hardware, "BPI-M5") == 0)
+    else if ((strcmp(hardware, "BPI-M5") == 0) || (strcmp(hardware, "BPI-M2-Pro") == 0))
     {
         piModel = PI_MODEL_BANANAPIM5;
         info->type = "BPI-M5";

@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time  
   
 bcmledpin = 27    # pin13, bcm27
-phyledpin = 13    # pin31, bcm27
+phyledpin = 13    # pin13, bcm27
 
 def setup_bcm():
   GPIO.setmode(GPIO.BCM)
