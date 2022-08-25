@@ -109,6 +109,10 @@ static int isGpioAOPin(int pin)
         start = M5_GPIOAO_PIN_START;
 	end = M5_GPIOAO_PIN_END;
     }
+    else if (piModel == PI_MODEL_BANANAPICM4) {
+        start = CM4_GPIOAO_PIN_START;
+	end = CM4_GPIOAO_PIN_END;
+    }
 	
     if (pin >= start && pin <= end)
         return 1;
@@ -165,6 +169,28 @@ static int gpioToMuxReg (int pin)
                 return -1;
         }
     }
+    else if (piModel == PI_MODEL_BANANAPICM4) {
+        switch (pin) {
+        case    CM4_GPIOH_PIN_START     ...CM4_GPIOH_PIN_END:
+                return  CM4_GPIOH_MUX_B_REG_OFFSET;
+        case    CM4_GPIOA_PIN_START     ...CM4_GPIOA_PIN_START + 7:
+                return  CM4_GPIOA_MUX_D_REG_OFFSET;
+        case    CM4_GPIOA_PIN_START + 8 ...CM4_GPIOA_PIN_END:
+                return  CM4_GPIOA_MUX_E_REG_OFFSET;
+        case    CM4_GPIOX_PIN_START     ...CM4_GPIOX_PIN_START + 7:
+                return  CM4_GPIOX_MUX_3_REG_OFFSET;
+        case    CM4_GPIOX_PIN_START + 8 ...CM4_GPIOX_PIN_START + 15:
+                return  CM4_GPIOX_MUX_4_REG_OFFSET;
+        case    CM4_GPIOX_PIN_START + 16        ...CM4_GPIOX_PIN_END:
+                return  CM4_GPIOX_MUX_5_REG_OFFSET;
+        case    CM4_GPIOAO_PIN_START    ...CM4_GPIOAO_PIN_START + 7:
+                return  CM4_GPIOAO_MUX_REG0_OFFSET;
+        case    CM4_GPIOAO_PIN_START + 8        ...CM4_GPIOAO_PIN_START + 11:
+                return  CM4_GPIOAO_MUX_REG1_OFFSET;
+        default:
+                return -1;
+        }
+    }
     else
         wiringPiFailure(WPI_FATAL, "gpioToMuxReg: This code should only be called for Bananapi\n");
 
@@ -195,6 +221,16 @@ static int gpioToGPSETReg (int pin)
                 return  M5_GPIOX_OUTP_REG_OFFSET;
         if (pin >= M5_GPIOAO_PIN_START && pin <= M5_GPIOAO_PIN_END)
                 return  M5_GPIOAO_OUTP_REG_OFFSET;
+    }
+    else if (piModel == PI_MODEL_BANANAPICM4) {
+        if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
+                return  CM4_GPIOH_OUTP_REG_OFFSET;
+        if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
+                return  CM4_GPIOA_OUTP_REG_OFFSET;
+        if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_END)
+                return  CM4_GPIOX_OUTP_REG_OFFSET;
+        if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
+                return  CM4_GPIOAO_OUTP_REG_OFFSET;
     }
     else
 	wiringPiFailure(WPI_FATAL, "gpioToGPSETReg: This code should only be called for Bananapi\n");
@@ -227,6 +263,16 @@ static int  gpioToGPLEVReg (int pin)
         if (pin >= M5_GPIOAO_PIN_START && pin <= M5_GPIOAO_PIN_END)
                 return  M5_GPIOAO_INP_REG_OFFSET;
     }
+    else if (piModel == PI_MODEL_BANANAPICM4) {
+        if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
+                return  CM4_GPIOH_INP_REG_OFFSET;
+        if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
+                return  CM4_GPIOA_INP_REG_OFFSET;
+        if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_END)
+                return  CM4_GPIOX_INP_REG_OFFSET;
+        if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
+                return  CM4_GPIOAO_INP_REG_OFFSET;
+    }
     else
 	wiringPiFailure(WPI_FATAL, "gpioToGPLEVReg: This code should only be called for Bananapi\n");
 
@@ -238,7 +284,7 @@ static int  gpioToGPLEVReg (int pin)
 //
 static int  gpioToPUENReg (int pin)
 {
-	if (piModel == PI_MODEL_BANANAPIM2S) {
+    if (piModel == PI_MODEL_BANANAPIM2S) {
         if (pin >= M2S_GPIOH_PIN_START && pin <= M2S_GPIOH_PIN_END)
                 return  M2S_GPIOH_PUEN_REG_OFFSET;
         if (pin >= M2S_GPIOA_PIN_START && pin <= M2S_GPIOA_PIN_END)
@@ -257,6 +303,16 @@ static int  gpioToPUENReg (int pin)
                 return  M5_GPIOX_PUEN_REG_OFFSET;
         if (pin >= M5_GPIOAO_PIN_START && pin <= M5_GPIOAO_PIN_END)
                 return  M5_GPIOAO_PUEN_REG_OFFSET;
+    }
+    else if (piModel == PI_MODEL_BANANAPICM4) {
+        if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
+                return  CM4_GPIOH_PUEN_REG_OFFSET;
+        if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
+                return  CM4_GPIOA_PUEN_REG_OFFSET;
+        if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_END)
+                return  CM4_GPIOX_PUEN_REG_OFFSET;
+        if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
+                return  CM4_GPIOAO_PUEN_REG_OFFSET;
     }
     else
         wiringPiFailure(WPI_FATAL, "gpioToPUENReg: This code should only be called for Bananapi\n");
@@ -289,6 +345,16 @@ static int  gpioToPUPDReg (int pin)
         if (pin >= M5_GPIOAO_PIN_START && pin <= M5_GPIOAO_PIN_END)
                 return  M5_GPIOAO_PUPD_REG_OFFSET;
     }
+    else if (piModel == PI_MODEL_BANANAPICM4) {
+        if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
+                return  CM4_GPIOH_PUPD_REG_OFFSET;
+        if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
+                return  CM4_GPIOA_PUPD_REG_OFFSET;
+        if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_END)
+                return  CM4_GPIOX_PUPD_REG_OFFSET;
+        if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
+                return  CM4_GPIOAO_PUPD_REG_OFFSET;
+    }
     else
         wiringPiFailure(WPI_FATAL, "gpioToPUPDReg: This code should only be called for Bananapi\n");
 
@@ -320,6 +386,16 @@ static int  gpioToShiftReg (int pin)
         if (pin >= M5_GPIOAO_PIN_START && pin <= M5_GPIOAO_PIN_END)
                 return  pin - M5_GPIOAO_PIN_START;
     }
+    else if (piModel == PI_MODEL_BANANAPICM4) {
+        if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
+                return  pin - CM4_GPIOH_PIN_START;
+        if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
+                return  pin - CM4_GPIOA_PIN_START;
+        if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_END)
+                return  pin - CM4_GPIOX_PIN_START;
+        if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
+                return  pin - CM4_GPIOAO_PIN_START;
+    }
     else
         wiringPiFailure(WPI_FATAL, "gpioToShiftReg: This code should only be called for Bananapi\n");
 
@@ -350,6 +426,16 @@ static int  gpioToGPFSELReg (int pin)
                 return  M5_GPIOX_FSEL_REG_OFFSET;
         if (pin >= M5_GPIOAO_PIN_START && pin <= M5_GPIOAO_PIN_END)
                 return  M5_GPIOAO_FSEL_REG_OFFSET;
+    }
+    else if (piModel == PI_MODEL_BANANAPICM4) {
+        if (pin >= CM4_GPIOH_PIN_START && pin <= CM4_GPIOH_PIN_END)
+                return  CM4_GPIOH_FSEL_REG_OFFSET;
+        if (pin >= CM4_GPIOA_PIN_START && pin <= CM4_GPIOA_PIN_END)
+                return  CM4_GPIOA_FSEL_REG_OFFSET;
+        if (pin >= CM4_GPIOX_PIN_START && pin <= CM4_GPIOX_PIN_END)
+                return  CM4_GPIOX_FSEL_REG_OFFSET;
+        if (pin >= CM4_GPIOAO_PIN_START && pin <= CM4_GPIOAO_PIN_END)
+                return  CM4_GPIOAO_FSEL_REG_OFFSET;
     }
     else
         wiringPiFailure(WPI_FATAL, "gpioToGPFSELReg: This code should only be called for Bananapi\n");
@@ -411,6 +497,17 @@ int wiringPiSetupAml (void)
         if ((int32_t)gpioao == -1)
             return wiringPiFailure(WPI_ALMOST, "wiringPiSetupAml: mmap (GPIO_AO) failed: %s\n", strerror(errno));
     }
+    else if (piModel == PI_MODEL_BANANAPICM4)
+    {
+
+        // GPIO:
+        gpio = (uint32_t *)mmap(0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, CM4_GPIO_BASE);
+        if ((int32_t)gpio == -1)
+            return wiringPiFailure(WPI_ALMOST, "wiringPiSetupAml: mmap (GPIO) failed: %s\n", strerror(errno));
+        gpioao = (uint32_t *)mmap(0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, CM4_GPIO_AO_BASE);
+        if ((int32_t)gpioao == -1)
+            return wiringPiFailure(WPI_ALMOST, "wiringPiSetupAml: mmap (GPIO_AO) failed: %s\n", strerror(errno));
+    }
 
     return 0;
 }
@@ -442,7 +539,8 @@ void pinModeAml (int pin, int mode)
     if (mode == INPUT)
     {
         if (piModel == PI_MODEL_BANANAPIM2S ||
-            piModel == PI_MODEL_BANANAPIM5) {
+            piModel == PI_MODEL_BANANAPIM5 ||
+            piModel == PI_MODEL_BANANAPICM4) {
             *((isGpioAOPin(pin) ? gpioao : gpio) + mux)  = *((isGpioAOPin(pin) ? gpioao : gpio) + mux) & ~(0xF << target);
             *((isGpioAOPin(pin) ? gpioao : gpio) + fsel) = *((isGpioAOPin(pin) ? gpioao : gpio) + fsel) | (1 << shift);
 	}
@@ -452,7 +550,8 @@ void pinModeAml (int pin, int mode)
     else if (mode == OUTPUT)
     {
         if (piModel == PI_MODEL_BANANAPIM2S ||
-            piModel == PI_MODEL_BANANAPIM5) {
+            piModel == PI_MODEL_BANANAPIM5 ||
+            piModel == PI_MODEL_BANANAPICM4) {
             *((isGpioAOPin(pin) ? gpioao : gpio) + mux)  = *((isGpioAOPin(pin) ? gpioao : gpio) + mux) & ~(0xF << target);
             *((isGpioAOPin(pin) ? gpioao : gpio) + fsel) = *((isGpioAOPin(pin) ? gpioao : gpio) + fsel) & ~(1 << shift);
 	}
@@ -480,7 +579,8 @@ void pullUpDnControlAml (int pin, int pud)
     pupd = gpioToPUPDReg(pin);
 
     if (piModel == PI_MODEL_BANANAPIM2S ||
-        piModel == PI_MODEL_BANANAPIM5)
+        piModel == PI_MODEL_BANANAPIM5 ||
+        piModel == PI_MODEL_BANANAPICM4)
     {
 
         if (pud)
@@ -510,7 +610,8 @@ int digitalReadAml (int pin)
 {
 
     if (piModel == PI_MODEL_BANANAPIM2S ||
-        piModel == PI_MODEL_BANANAPIM5)
+        piModel == PI_MODEL_BANANAPIM5 ||
+        piModel == PI_MODEL_BANANAPICM4)
     {
         if ((*((isGpioAOPin(pin) ? gpioao : gpio) + gpioToGPLEVReg(pin)) & (1 << gpioToShiftReg(pin))) != 0)
             return HIGH;
@@ -533,7 +634,8 @@ void digitalWriteAml (int pin, int value)
 {
 
     if (piModel == PI_MODEL_BANANAPIM2S ||
-        piModel == PI_MODEL_BANANAPIM5)
+        piModel == PI_MODEL_BANANAPIM5 ||
+        piModel == PI_MODEL_BANANAPICM4)
     {
         if (value == LOW)
             *((isGpioAOPin(pin) ? gpioao : gpio) + gpioToGPSETReg(pin)) &= ~(1 << gpioToShiftReg(pin));
@@ -584,7 +686,8 @@ int pinGetModeAml (int pin)
     //aml: pin comes in as gpio
 
     if (piModel == PI_MODEL_BANANAPIM2S ||
-        piModel == PI_MODEL_BANANAPIM5)
+        piModel == PI_MODEL_BANANAPIM5 ||
+        piModel == PI_MODEL_BANANAPICM4)
     {
         regval = (*((isGpioAOPin(pin) ? gpioao : gpio) + gpioToGPFSELReg(pin)));
         rwbit = regval & (1 << gpioToShiftReg(pin));
@@ -618,6 +721,15 @@ void setInfoAml(char *hardware, void *vinfo)
         info->manufacturer = "Bananapi";
         info->processor = "AMLS905X3";
     }
+    else if (strcmp(hardware, "BPI-CM4") == 0)
+    {
+        piModel = PI_MODEL_BANANAPICM4;
+        info->type = "BPI-CM4";
+        info->p1_revision = 3;
+        info->ram = "2048M/4096M";
+        info->manufacturer = "Bananapi";
+        info->processor = "AMLA311D";
+    }
     else
         wiringPiFailure(WPI_FATAL, "setInfoAml: This code should only be called for Bananapi\n");
    
@@ -635,5 +747,10 @@ void setMappingPtrsAml(void)
     {
         pin_to_gpio = (const int(*)[41]) & physToGpioBananapiM5;
         bcm_to_amlgpio = &bcmToOGpioBananapiM5;
+    }
+    else if (piModel == PI_MODEL_BANANAPICM4)
+    {
+        pin_to_gpio = (const int(*)[41]) & physToGpioBananapiCM4;
+        bcm_to_amlgpio = &bcmToOGpioBananapiCM4;
     }
 }

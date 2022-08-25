@@ -36,11 +36,11 @@ def shutdown():
 if __name__ == '__main__':     # Program start  
   print('To read output correctly, jumper pin 13 (bcm27) to pin 31 (bcm6)')
   print('Press Ctrl-C to exit') 
-  #setup_bcm()
-  setup_board()
+  setup_bcm()
+  #setup_board()
   print("Hardware information: ", GPIO.RPI_INFO)
   try:  
-    #blink_bcm()
-    blink_board()
+    blink_bcm()
+    #blink_board()
   except KeyboardInterrupt:
     shutdown()

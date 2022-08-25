@@ -65,7 +65,7 @@ int get_rpi_info(rpi_info *info)
         else {  //Check for Bananapi 
          if (strstr(hardware, "Bananapi"))
             sscanf(buffer, "Hardware	: Bananapi %s", hardware);
-         if (strstr(hardware, "BPI-M2S") || strstr(hardware, "BPI-M5") || strstr(hardware, "BPI-M2-Pro")) {
+         if (strstr(hardware, "BPI-M2S") || strstr(hardware, "BPI-CM4") || strstr(hardware, "BPI-M5") || strstr(hardware, "BPI-M2-Pro")) {
                 aml_found = found = 1;
                 setInfoAml(hardware, (void *)info);
             }
