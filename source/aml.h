@@ -40,6 +40,7 @@
 #define	PI_MODEL_BANANAPIM5  	6
 #define PI_MODEL_BANANAPIM2S	7
 #define PI_MODEL_BANANAPICM4	8
+#define PI_MODEL_BANANAPIRPICM4 9
 
 // Failure modes
 
@@ -276,30 +277,71 @@ static volatile uint32_t *gpio, *gpioao;
 //	Take a Wiring pin (0 through X) and re-map it to the AML_GPIO pin
 //
 static const int pinToGpioBananapiCM4[64] = {
-	// wiringPi number to native gpio number
-	469, 461,	//  0 |  1 : GPIOA.9, GPIOA.1
-	466, 465,	//  2 |  3 : GPIOA.6, GPIOA.5
-	473, 472,	//  4 |  5 : GPIOA.13, GPIOA.12
-	471, 470,	//  6 |  7 : GPIOA.11, GPIOA.10
-	493, 494,	//  8 |  9 : GPIOX.17(I2C-2_SDA), GPIOX.18(I2C-2_SCL)
-	486, 501,	// 10 | 11 : GPIOX.10(SPI_SS), GPIOAO.5
-	484, 485,	// 12 | 13 : GPIOX.8(SPI_MOSI,PWM_C), GPIOX.9(SPI_MISO)
-	487, 482,	// 14 | 15 : GPIOX.11(SPI_CLK), GPIOX.6(UART_B_TX,PWM_D)
-	483,  -1,	// 16 | 17 : GPIOX.7(UART_B_RX,PWM_F),
-	 -1,  -1,	// 18 | 19 :
-	 -1, 431,	// 20 | 21 : , GPIOH.4
-	432, 467,	// 22 | 23 : GPIOH.5, GPIOA.7
-	462, 460,	// 24 | 25 : GPIOA.2, GPIOA.0
-	506, 507,	// 26 | 27 : GPIOAO.10, GPIOAO.11
-	464, 463,	// 28 | 29 : GPIOA.4, GPIOA.3
-	474, 475,	// 30 | 31 : GPIOA.14(I2C-3_SDA), GPIOA_15(I2C3_SCL)
-	// Padding:
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,	// 32...47
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,	// 48...63
-
+        // wiringPi number to native gpio number
+        432, 461,       //  0 |  1 : GPIOH.5, GPIOA.1
+        431, 501,       //  2 |  3 : GPIOH.4, GPIOAO.5
+        460, 462,       //  4 |  5 : GPIOA.0, GPIOA.2
+        467, 506,       //  6 |  7 : GPIOA.7, GPIOAO.10
+        493, 494,       //  8 |  9 : GPIOX.17(I2C-2_SDA), GPIOX.18(I2C-2_SCL)
+        486, 463,       // 10 | 11 : GPIOX.10(SPI_SS), GPIOA.3
+        484, 485,       // 12 | 13 : GPIOX.8(SPI_MOSI,PWM_C), GPIOX.9(SPI_MISO)
+        487, 482,       // 14 | 15 : GPIOX.11(SPI_CLK), GPIOX.6(UART_B_TX,PWM_D)
+        483,  -1,       // 16 | 17 : GPIOX.7(UART_B_RX,PWM_F),
+        // Padding:
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,         // 18...31
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 32...47
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 48...63
 };
 
 static const int physToGpioBananapiCM4[64] = {
+        // physical header pin number to native gpio number
+	-1,            //  0
+         -1,  -1,       //  1 |  2 : 3.3V, 5.0V
+        493,  -1,       //  3 |  4 : GPIOX.17(I2C-2_SDA), 5.0V
+        494,  -1,       //  5 |  6 : GPIOX.18(I2C-2_SCL), GND
+        506, 482,       //  7 |  8 : GPIOAO.10, GPIOX.6(UART_B_TX,PWM_D)
+         -1, 483,       //  9 | 10 : GND, GPIOX.7(UART_B_RX,PWM_F)
+        432, 461,       // 11 | 12 : GPIOH.5, GPIOA.1
+        431,  -1,       // 13 | 14 : GPIOH.4, GND
+        501, 460,       // 15 | 16 : GPIOAO.5, GPIOA.0
+         -1, 462,       // 17 | 18 : 3.3V, GPIOA.2
+        484,  -1,       // 19 | 20 : GPIOX.8(SPI_MOSI,PWM_C), GND
+        485, 467,       // 21 | 22 : GPIOX.9(SPI_MISO), GPIOA.7
+        487, 486,       // 23 | 24 : GPIOX.11(SPI_CLK), GPIOX.10(SPI_SS)
+         -1, 463,       // 25 | 26 : GND, GPIOA.3
+        // Not used
+        -1, -1, -1, -1, -1, -1, -1, -1, // 27...34
+        -1, -1, -1, -1, -1, -1,         // 35...40
+        -1, -1, -1, -1, -1, -1, -1, -1, // 41...48
+        -1, -1, -1, -1, -1, -1, -1, -1, // 49...56
+        -1, -1, -1, -1, -1, -1, -1      // 57...63
+};
+
+static const int pinToGpioBananapiRPICM4[64] = {
+        // wiringPi number to native gpio number
+        469, 461,       //  0 |  1 : GPIOA.9, GPIOA.1
+        466, 465,       //  2 |  3 : GPIOA.6, GPIOA.5
+        473, 472,       //  4 |  5 : GPIOA.13, GPIOA.12
+        471, 470,       //  6 |  7 : GPIOA.11, GPIOA.10
+        493, 494,       //  8 |  9 : GPIOX.17(I2C-2_SDA), GPIOX.18(I2C-2_SCL)
+        486, 501,       // 10 | 11 : GPIOX.10(SPI_SS), GPIOAO.5
+        484, 485,       // 12 | 13 : GPIOX.8(SPI_MOSI,PWM_C), GPIOX.9(SPI_MISO)
+        487, 482,       // 14 | 15 : GPIOX.11(SPI_CLK), GPIOX.6(UART_B_TX,PWM_D)
+        483,  -1,       // 16 | 17 : GPIOX.7(UART_B_RX,PWM_F),
+         -1,  -1,       // 18 | 19 :
+         -1, 431,       // 20 | 21 : , GPIOH.4
+        432, 467,       // 22 | 23 : GPIOH.5, GPIOA.7
+        462, 460,       // 24 | 25 : GPIOA.2, GPIOA.0
+        506, 507,       // 26 | 27 : GPIOAO.10, GPIOAO.11
+        464, 463,       // 28 | 29 : GPIOA.4, GPIOA.3
+        474, 475,       // 30 | 31 : GPIOA.14(I2C-3_SDA), GPIOA_15(I2C3_SCL)
+        // Padding:
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 32...47
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 48...63
+
+};
+
+static const int physToGpioBananapiRPICM4[64] = {
 	// physical header pin number to native gpio number
 	 -1,		//  0
 	 -1,  -1,	//  1 |  2 : 3.3V, 5.0V
@@ -444,7 +486,19 @@ static const int physToGpioBananapiM5[64] = {
 int aml_found;
 int  piModel;
 
-const int bcmToOGpioBananapiCM4[64] = {	// BCM ModE
+const int bcmToOGpioBananapiCM4[64] = { // BCM ModE
+     -1,  -1, 493, 494, 506,  -1,  -1, 463, // 0..7
+    486, 485, 484, 487,  -1,  -1, 482, 483, // 8..15
+     -1, 432, 461,  -1,  -1,  -1, 501, 460, // 16..23
+    462, 467,  -1, 431,  -1,  -1,  -1,  -1, // 24..31
+// Padding:
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, // 32..39
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, // 40..47
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, // 48..55
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1  // 56..63
+};
+
+const int bcmToOGpioBananapiRPICM4[64] = {  // BCM ModE
      -1,  -1, 493, 494, 470, 431, 432, 501, // 0..7
     486, 485, 484, 487, 506, 467, 482, 483, // 8..15
     507, 469, 461, 462,  -1,  -1, 465, 473, // 16..23
@@ -499,10 +553,12 @@ const int (*bcm_to_amlgpio)[64];
 
 extern int aml_found;
 extern int  piModel;
+extern const int physToGpioBananapiRPICM4[64];
 extern const int physToGpioBananapiCM4[64];
 extern const int physToGpioBananapiM2S[64];
 extern const int physToGpioBananapiM5[64];
 extern const int bcmToOGpioBananapiCM4[64];
+extern const int bcmToOGpioBananapiRPICM4[64];
 extern const int bcmToOGpioBananapiM2S[64];
 extern const int bcmToOGpioBananapiM5[64];
 extern const int bcmToOGpioRPi[64];
