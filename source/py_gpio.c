@@ -130,7 +130,7 @@ static PyObject *py_cleanup(PyObject *self, PyObject *args, PyObject *kwargs)
          event_cleanup_all();
 
          // set everything back to input
-         for (i=0; i<=MAXGPIOCOUNT; i++) {
+         for (i=0; i<=255; i++) {
             if (gpio_direction[i] != -1) {
                setup_gpio(i, INPUT, PUD_OFF);
                gpio_direction[i] = -1;
@@ -1009,7 +1009,7 @@ PyMODINIT_FUNC init_GPIO(void)
 
    define_constants(module);
 
-   for (i=0; i<=MAXGPIOCOUNT; i++)
+   for (i=0; i<=255; i++)
       gpio_direction[i] = -1;
 
    // detect board revision and set up accordingly

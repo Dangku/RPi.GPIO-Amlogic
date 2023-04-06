@@ -59,7 +59,7 @@ struct callback
 };
 struct callback *callbacks = NULL;
 
-int event_occurred[MAXGPIOCOUNT+1] = { 0 };
+int event_occurred[256] = { 0 };
 int thread_running = 0;
 int epfd_thread = -1;
 int epfd_blocking = -1;
