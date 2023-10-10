@@ -41,6 +41,7 @@
 #define PI_MODEL_BANANAPIM2S	7
 #define PI_MODEL_BANANAPICM4	8
 #define PI_MODEL_BANANAPIRPICM4 9
+#define PI_MODEL_BANANAPICM5IO  10
 
 // Failure modes
 
@@ -60,6 +61,52 @@
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(x)	(sizeof(x) / sizeof((x)[0]))
 #endif
+
+//
+// For Bananapi CM5IO Board
+//
+#define CM5_GPIO_MASK			(0xFFFFFF00)
+#define CM5_GPIO_BASE			0xFE004000
+
+#define CM5_GPIO_PIN_BASE		355
+
+#define CM5_GPIOD_PIN_START       (CM5_GPIO_PIN_BASE + 57)
+#define CM5_GPIOD_PIN_END       (CM5_GPIO_PIN_BASE + 69)
+#define CM5_GPIOT_PIN_START       (CM5_GPIO_PIN_BASE + 91)
+#define CM5_GPIOT_PIN_END       (CM5_GPIO_PIN_BASE + 114)
+#define CM5_GPIOY_PIN_START       (CM5_GPIO_PIN_BASE + 129)
+#define CM5_GPIOY_PIN_END       (CM5_GPIO_PIN_BASE + 147)
+
+#define CM5_GPIOD_INP_REG_OFFSET			0x030
+#define CM5_GPIOD_OUTP_REG_OFFSET			0x031
+#define CM5_GPIOD_FSEL_REG_OFFSET			0x032
+#define CM5_GPIOD_PUEN_REG_OFFSET    	0x033
+#define CM5_GPIOD_PUPD_REG_OFFSET		0x034
+#define CM5_GPIOD_DS_REG_OFFSET   	    0x037
+#define CM5_GPIOD_MUX_A_REG_OFFSET   	0x00A
+#define CM5_GPIOD_MUX_B_REG_OFFSET   	0x00B
+
+#define CM5_GPIOT_INP_REG_OFFSET			0x070
+#define CM5_GPIOT_OUTP_REG_OFFSET			0x071
+#define CM5_GPIOT_FSEL_REG_OFFSET			0x072
+#define CM5_GPIOT_PUEN_REG_OFFSET    		0x073
+#define CM5_GPIOT_PUPD_REG_OFFSET			0x074
+#define CM5_GPIOT_DS_REG_OFFSET   	    0x077
+#define CM5_GPIOT_DS_EXT_REG_OFFSET   	0x078
+#define CM5_GPIOT_MUX_F_REG_OFFSET   		0x00F
+#define CM5_GPIOT_MUX_G_REG_OFFSET   	0x010
+#define CM5_GPIOT_MUX_H_REG_OFFSET   	0x011
+
+#define CM5_GPIOY_INP_REG_OFFSET			0x080
+#define CM5_GPIOY_OUTP_REG_OFFSET			0x081
+#define CM5_GPIOY_FSEL_REG_OFFSET			0x082
+#define CM5_GPIOY_PUEN_REG_OFFSET    		0x083
+#define CM5_GPIOY_PUPD_REG_OFFSET			0x084
+#define CM5_GPIOY_DS_REG_OFFSET   	    0x087
+#define CM5_GPIOY_DS_EXT_REG_OFFSET   	0x088
+#define CM5_GPIOY_MUX_J_REG_OFFSET   		0x013
+#define CM5_GPIOY_MUX_K_REG_OFFSET   	0x014
+#define CM5_GPIOY_MUX_L_REG_OFFSET   		0x015
 
 //
 // For Bananapi CM4 Board
@@ -276,6 +323,62 @@ static volatile uint32_t *gpio, *gpioao;
 // pinToGpio:
 //	Take a Wiring pin (0 through X) and re-map it to the AML_GPIO pin
 //
+static const int pinToGpioBananapiCM5IO[64] = {
+	// wiringPi number to native gpio number
+	496, 447,	//  0 |  1 : GPIOY.12, GPIOT.1
+	497, 494,	//  2 |  3 : GPIOY.13, GPIOY.10
+	493, 492,	//  4 |  5 : GPIOY.9, GPIOY.8(PWM_F)
+	489, 498,	//  6 |  7 : GPIOY.5, GPIOY.14
+	502, 501,	//  8 |  9 : GPIOY.18(I2C-5_SDA), GPIOY.17(I2C-5_SCL)
+	487, 488,	// 10 | 11 : GPIOY.3(SPI_SS), GPIOY.4
+	484, 485,	// 12 | 13 : GPIOY.0(SPI_MOSI), GPIOY.1(SPI_MISO)
+	486, 490,	// 14 | 15 : GPIOY.2(SPI_CLK), GPIOY.6(UART_E_TX)
+	491,  -1,	// 16 | 17 : GPIOY.7(UART_E_RX),
+	 -1,  -1,	// 18 | 19 :
+	 -1, 495,	// 20 | 21 : , GPIOY.11
+	417, 416,	// 22 | 23 : GPIOD.5, GPIOD.4
+	448, 446,	// 24 | 25 : GPIOT.2, GPIOT.0
+	420, 450,	// 26 | 27 : GPIOD.8, GPIOT.4
+	457, 449,	// 28 | 29 : GPIOT.11, GPIOT.3
+	500, 499,	// 30 | 31 : GPIOY.16, GPIOY_15
+	// Padding:
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,	// 32...47
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,	// 48...63
+};
+
+static const int physToGpioBananapiCM5IO[64] = {
+	// physical header pin number to native gpio number
+	 -1,		//  0
+	 -1,  -1,	//  1 |  2 : 3.3V, 5.0V
+	502,  -1,	//  3 |  4 : GPIOY.18(I2C-5_SDA), 5.0V
+	501,  -1,	//  5 |  6 : GPIOY.17(I2C-5_SCL), GND
+	498, 490,	//  7 |  8 : GPIOY.14, GPIOY.6(UART_E_TX)
+	 -1, 491,	//  9 | 10 : GND, GPIOY.7(UART_E_RX)
+	496, 447,	// 11 | 12 : GPIOY.12, GPIOT.1
+	497,  -1,	// 13 | 14 : GPIOY.13, GND
+	494, 493,	// 15 | 16 : GPIOY.10, GPIOY.9
+	 -1, 492,	// 17 | 18 : 3.3V, GPIOX.8(PWM_F)
+	484,  -1,	// 19 | 20 : GPIOY.0(SPI_MOSI), GND
+	485, 489,	// 21 | 22 : GPIOY.1(SPI_MISO), GPIOY.5
+	486, 487,	// 23 | 24 : GPIOY.2(SPI_CLK), GPIOY.3(SPI_SS)
+	 -1, 488,	// 25 | 26 : GND, GPIOY.4
+	500, 499,	// 27 | 28 : GPIOY.16, GPIOY_15
+	495,  -1,	// 29 | 30 : GPIOY.11, GND
+	417, 420,	// 31 | 32 : GPIOD.5, GPIOD.8
+	416,  -1,	// 33 | 34 : GPIOD.4, GND
+	448, 450,	// 35 | 36 : GPIOT.2, GPIOT.4
+	446, 457,	// 37 | 38 : GPIOT.0, GPIOT.11
+	 -1, 449,	// 39 | 40 : GND, GPIOT.3
+	// Not used
+	-1, -1, -1, -1, -1, -1, -1, -1,	// 41...48
+	-1, -1, -1, -1, -1, -1, -1, -1,	// 49...56
+	-1, -1, -1, -1, -1, -1, -1	// 57...63
+};
+
+//
+// pinToGpio:
+//	Take a Wiring pin (0 through X) and re-map it to the AML_GPIO pin
+//
 static const int pinToGpioBananapiCM4[64] = {
         // wiringPi number to native gpio number
         506, 461,       //  0 |  1 : GPIOAO.10, GPIOA.1
@@ -486,6 +589,18 @@ static const int physToGpioBananapiM5[64] = {
 int aml_found;
 int  piModel;
 
+const int bcmToOGpioBananapiCM5IO[64] = {	// BCM ModE
+     -1,  -1, 502, 501, 498, 495, 417, 488, // 0..7
+    487, 485, 484, 486, 420, 416, 490, 491, // 8..15
+    450, 496, 447, 448,  -1,  -1, 494, 493, // 16..23
+    492, 489,  -1, 497,  -1,  -1,  -1,  -1, // 24..31
+// Padding:
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, // 32..39
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, // 40..47
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, // 48..55
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1  // 56..63
+};
+
 const int bcmToOGpioBananapiCM4[64] = { // BCM ModE
      -1,  -1, 493, 494, 506,  -1,  -1, 463, // 0..7
     486, 485, 484, 487,  -1,  -1, 482, 483, // 8..15
@@ -553,10 +668,12 @@ const int (*bcm_to_amlgpio)[64];
 
 extern int aml_found;
 extern int  piModel;
+extern const int physToGpioBananapiCM5IO[64];
 extern const int physToGpioBananapiRPICM4[64];
 extern const int physToGpioBananapiCM4[64];
 extern const int physToGpioBananapiM2S[64];
 extern const int physToGpioBananapiM5[64];
+extern const int bcmToOGpioBananapiCM5IO[64];
 extern const int bcmToOGpioBananapiCM4[64];
 extern const int bcmToOGpioBananapiRPICM4[64];
 extern const int bcmToOGpioBananapiM2S[64];

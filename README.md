@@ -1,7 +1,7 @@
 
 # RPi.GPIO-Amlogic  
   
-RPi.GPIO port with support for Bananapi M5/M2Pro/M2S/CM4  
+RPi.GPIO port with support for Bananapi M5/M2Pro/M2S/CM4/CM5IO
   
 
 ## Based on:  
@@ -9,7 +9,7 @@ RPi.GPIO port with support for Bananapi M5/M2Pro/M2S/CM4
 RPi.GPIO by Ben Croston  
   https://sourceforge.net/projects/raspberry-gpio-python/  
 
-Bananapi M5/M2Pro/M2S/CM4 WiringPi port  
+Bananapi M5/M2Pro/M2S/CM4/CM5IO WiringPi port  
   https://github.com/Dangku/amlogic-wiringPi  
 
 awesometic's Odroid RPi.GPIO port  
@@ -22,7 +22,7 @@ contains code from both projects, it is licensed under the slightly more restric
   
   
 ## Status  
-Working for simple IO on Bananapi M5/M2Pro/M2S/CM4  
+Working for simple IO on Bananapi M5/M2Pro/M2S/CM4/CM5IO
 PWM, events, analog read, ... not implemented  
   
   
