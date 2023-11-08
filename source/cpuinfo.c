@@ -69,6 +69,7 @@ int get_rpi_info(rpi_info *info)
              strstr(hardware, "BPI-CM4") ||
 	     strstr(hardware, "BPI-RPICM4") ||
 	     strstr(hardware, "BPI-CM5IO") ||
+	     strstr(hardware, "BPI-CM5-BPICM4IO") ||
 	     strstr(hardware, "BPI-M5") ||
 	     strstr(hardware, "BPI-M2-Pro")) {
                 aml_found = found = 1;
