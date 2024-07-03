@@ -1,3 +1,10 @@
+# Notice:
+
+## This project has been archived and is no longer being maintained.
+
+New repository moved to https://github.com/Dangku/RPi.GPIO.
+
+------------------------------------------------------------------------
 
 # RPi.GPIO-Amlogic  
   
